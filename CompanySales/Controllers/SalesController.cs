@@ -16,7 +16,7 @@ namespace CompanySales.Controllers
     public class SalesController : Controller
     {
         private SalesContext db = new SalesContext();
-
+        
         // GET: Sales
         public ActionResult Index()
         {
@@ -81,21 +81,7 @@ namespace CompanySales.Controllers
             return View(new SalesViewModel() { ExistingSaleData = result, NewSale = new Sales() });
         }
 
-        // GET: Sales/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Sales sales = db.Sales.Find(id);
-            if (sales == null)
-            {
-                return HttpNotFound();
-            }
-            return View(sales);
-        }
-
+        
         // POST: Sales/Create
         [HttpPost]
         public ActionResult Create(SalesViewModel salesViewModel)
@@ -104,15 +90,6 @@ namespace CompanySales.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
 
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
