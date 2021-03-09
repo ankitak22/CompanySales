@@ -1,0 +1,100 @@
+﻿html {
+    background-color: #e2e2e2;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #d8cfcf;
+    border-top: solid 10px #000;
+    color: #333;
+    font-size: .85em;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
+    align-content:center;
+}
+
+h1, h2, h3,
+h4, h5, h6 {
+    color: #000;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.75em;
+}
+
+#center {
+    text-align: center;
+    margin: auto;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+}
+
+#inputForm {
+    margin: auto;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    border: 2px dashed black;
+}
+.centerh {
+    text-align: center;
+    margin: auto;
+    width: 100%;
+    padding: 5px;
+}
+
+#sales tr:first-child td:first-child {
+    font-size:0px;
+}
+
+#sales td:first-child {
+    font-weight: bold;
+    color: #000;
+}
+
+#sales tr:first-child {
+    font-weight: bold;
+    color: #000;
+}   
+
+#sales tr:nth-last-child(-n+3) {
+    font-weight: bold;
+    color: #000;
+}
+
+#sales {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    #sales td, #sales th {
+        border: 1px solid #000;
+        padding: 8px;
+    }
+
+    #sales tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    #sales tr:hover {
+        background-color: #ddd;
+    }
+
+    #sales th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+    }
+

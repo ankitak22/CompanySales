@@ -1,0 +1,94 @@
+﻿@model CompanySales.ViewModel.SalesViewModel
+
+@{
+    Layout = null;
+}
+
+
+
+<script>
+    function validateCheck() {
+        var m, st, sa;
+        m = document.getElementById("month").value;
+        st = document.getElementById("state").value;
+        sa = document.getElementById("sale").value;
+        if (!m || !st || !sa) {
+            if (m.length === 0) {
+                alert("Month cannot be blank");
+                return false;
+            }
+            if (st.length === 0) {
+                alert("State cannot be blank");
+                return false;
+            }
+            if (sa.length === 0) {
+                alert("State cannot be blank");
+                return false;
+            }
+            return false;
+        }
+        if (sa == 0) {
+            alert("Please enter a value greater than 0 for Sale");
+            return false;
+        }
+    }
+</script>
+<!DOCTYPE html>
+<link href="~/Content/SampleCss.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+
+    <div id="center">
+        <h1 class="centerh">XYZ Sales Across Regions</h1>
+        <div class="center">
+            <table id="sales">
+                @for (int row = 0; row < Model.ExistingSaleData.Count; row++)
+                {
+                    <tr>
+                        @for (int col = 0; col < Model.ExistingSaleData[row].Count; col++)
+                        {
+                            <td>@Model.ExistingSaleData[row][col] </td>
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="center">
+            @using (Html.BeginForm("Create", "Sales", FormMethod.Post, new { onsubmit = "return validateCheck()"}))
+            {
+
+                <table id="inputForm">
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(m => m.NewSale.ID)
+                            @Html.Label("Month")
+                            @Html.TextBoxFor(m => m.NewSale.Month, new { @id = "month", pattern = @"^[a-zA-Z0-9]+$" })
+                        </td>
+                        <td>
+                            @Html.Label("State")
+                            @Html.TextBoxFor(m => m.NewSale.State, new { @id = "state", pattern = @"^[a-zA-Z\s]*$" })
+                        </td>
+                        <td>
+                            @Html.Label("Sale")
+                            @Html.TextBoxFor(m => m.NewSale.Sale, new { @id = "sale", pattern = @"0*[1-9][0-9]*" })
+                            @Html.ValidationMessageFor(m => m.NewSale.Sale, "")
+                        </td>
+                        <td><input type="submit" value="Submit" />
+                            </td>
+                    </tr>
+                </table>
+                <p id="error" style="color:red;"></p>
+                
+
+            }
+        </div>
+    </div>
+</body>
+</html>
