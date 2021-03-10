@@ -30,29 +30,36 @@ namespace CompanySales.Controllers
         // GET: Sales
         public ActionResult Index()
         {
-
-            IReadOnlyList<Sales> existingData = _salesService.GetSales();
-
-            List<List<string>> _invertedData = _salesService.GetInvertedSales(existingData);
-            List<string> _columnsHeaders = _salesService.GetColumnHeaders(existingData);
-            List<string> _rowTotal = _salesService.GetTotal(_invertedData);
-            List<string> _rowMedian = _salesService.GetMedian(_invertedData);
-            List<string> _rowAverage = _salesService.GetAverage(_invertedData);
-
-            
-            //get footers rows
-            List<List<string>> _footerRows = new List<List<string>>();
-            _footerRows.Add(_salesService.GetAverage(_invertedData));
-            _footerRows.Add(_salesService.GetMedian(_invertedData));
-            _footerRows.Add(_salesService.GetTotal(_invertedData));
-
-            //add footers
-            foreach (List<string> _footerRow in _footerRows)
+            try
             {
-                _invertedData.Add(_footerRow);
+
+                IReadOnlyList<Sales> existingData = _salesService.GetSales();
+
+                List<List<string>> _invertedData = _salesService.GetInvertedSales(existingData);
+                List<string> _columnsHeaders = _salesService.GetColumnHeaders(existingData);
+                List<string> _rowTotal = _salesService.GetTotal(_invertedData);
+                List<string> _rowMedian = _salesService.GetMedian(_invertedData);
+                List<string> _rowAverage = _salesService.GetAverage(_invertedData);
+
+
+                //get footers rows
+                List<List<string>> _footerRows = new List<List<string>>();
+                _footerRows.Add(_salesService.GetAverage(_invertedData));
+                _footerRows.Add(_salesService.GetMedian(_invertedData));
+                _footerRows.Add(_salesService.GetTotal(_invertedData));
+
+                //add footers
+                foreach (List<string> _footerRow in _footerRows)
+                {
+                    _invertedData.Add(_footerRow);
+                }
+                _invertedData.Insert(0, _columnsHeaders);
+                return View(new SalesViewModel() { ExistingSaleData = _invertedData, NewSale = new Sales() });
             }
-            _invertedData.Insert(0, _columnsHeaders);
-            return View(new SalesViewModel() { ExistingSaleData = _invertedData, NewSale = new Sales() });
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
         }
 
         
@@ -60,8 +67,16 @@ namespace CompanySales.Controllers
         [HttpPost]
         public ActionResult Create(SalesViewModel salesViewModel)
         {
-            _salesService.AddSale(salesViewModel.NewSale);
-            return RedirectToAction("Index");
+            try
+            {
+                _salesService.AddSale(salesViewModel.NewSale);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                throw (ex);
+                //return RedirectToAction("Index");
+            }
         }
     }
 }

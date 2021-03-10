@@ -10,7 +10,7 @@ namespace CompanySales.Models
     {
         public int ID { get; set; }
 
-        [Required(ErrorMessage = "Month is Required. It cannot be empty")]
+        //[Required(ErrorMessage = "Month is Required. It cannot be empty")]
         public string Month { get; set; }
 
         [Required(ErrorMessage = "State is Required. It cannot be empty")]

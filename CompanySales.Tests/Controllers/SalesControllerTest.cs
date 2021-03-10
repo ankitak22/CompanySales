@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Web.Mvc;
 using CompanySales.Controllers;
 using CompanySales.DAL;
@@ -68,32 +69,28 @@ namespace CompanySales.Tests.Controllers
             Assert.IsNotNull(result);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void CompanySales_Index_InvalidDataConnection()
         {
             // Arrange
             SalesController controller = new SalesController(_salesServiceMock.Object);
             SalesViewModel smv = new SalesViewModel();
-            try
-            {
+            
                 smv.NewSale = _emptyEntities[0];
-                _salesServiceMock.Setup(m => m.GetSales()).Returns(_emptyEntities);
-                _salesServiceMock.Setup(m => m.GetInvertedSales(_emptyEntities)).Returns(new List<List<string>>());
-                _salesServiceMock.Setup(m => m.GetColumnHeaders(_emptyEntities)).Returns(new List<string>());
-                _salesServiceMock.Setup(m => m.GetMedian(_invertedList)).Returns(new List<string>());
-                _salesServiceMock.Setup(m => m.GetAverage(_invertedList)).Returns(new List<string>());
-                _salesServiceMock.Setup(m => m.GetTotal(_invertedList)).Returns(new List<string>());
-            }
-            catch (Exception)
-            {
+            _salesServiceMock.Setup(m => m.GetSales()).Returns(_emptyEntities);
+            _salesServiceMock.Setup(m => m.GetInvertedSales(_emptyEntities)).Throws(new Exception());
+            _salesServiceMock.Setup(m => m.GetColumnHeaders(_emptyEntities)).Throws(new Exception());
+            _salesServiceMock.Setup(m => m.GetMedian(_invertedList)).Throws(new Exception());
+            _salesServiceMock.Setup(m => m.GetAverage(_invertedList)).Throws(new Exception());
+            _salesServiceMock.Setup(m => m.GetTotal(_invertedList)).Throws(new Exception());
 
-            }
 
             // Act
             var result = (ViewResult)controller.Index();
 
             // Assert
-            //Assert
-            //do nothing
+            //This will never reach here as an exception will be thrown
 
         }
 
@@ -114,6 +111,25 @@ namespace CompanySales.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.AreEqual("Index", result.RouteValues["action"]); 
             
+
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DbUpdateException))]
+        public void CompanySales_Create_InvalidNewSales()
+        {
+            // Arrange
+            SalesController controller = new SalesController(_salesServiceMock.Object);
+            SalesViewModel smv = new SalesViewModel();
+            smv.NewSale = _emptyEntities[0];
+            _salesServiceMock.Setup(m => m.AddSale(It.IsAny<Sales>())).Throws(new DbUpdateException());
+
+            // Act
+            var result = (RedirectToRouteResult)controller.Create(smv);
+
+            // Assert
+            //This will never reach here as an exception will be thrown
+
 
         }
     }
