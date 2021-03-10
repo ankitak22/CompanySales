@@ -9,76 +9,50 @@ using System.Web;
 using System.Web.Mvc;
 using CompanySales.DAL;
 using CompanySales.Models;
+using CompanySales.Service;
 using CompanySales.ViewModel;
 
 namespace CompanySales.Controllers
 {
     public class SalesController : Controller
     {
-        private SalesContext db = new SalesContext();
+        private readonly ISalesService _salesService;
+       
+        public SalesController(ISalesService salesService)
+        {
+            _salesService = salesService;
+        }
+        public SalesController()
+        {
+            _salesService = new SalesService();
+        }
         
         // GET: Sales
         public ActionResult Index()
         {
-            IReadOnlyList<Sales> existingData = db.Sales.ToList();
 
-            var columns = new[] { "Month" }.Union(existingData.Select(a => a.State).OrderBy(a => a)).ToList();
-            var rows = new[] { "State" }.Union(existingData.Select(a => a.Month).OrderBy(a => a)).ToList();
-            //var c = existingData.Select(p => p.State).Distinct();
-            var result = existingData.GroupBy(g => g.Month).OrderBy(g => g.Key).Select(g => columns.Select(c =>
-            {
-                string result1 = "";
-                if (c == "Month") result1 = g.Key;
-                var val = g.FirstOrDefault(r => r.State == c);
-                return val != null ? val.Sale.ToString() : "0";
-            }).ToList()).ToList();
+            IReadOnlyList<Sales> existingData = _salesService.GetSales();
 
-            //add row headers
-            for (int i = 0; i < rows.Count - 1; i++)
+            List<List<string>> _invertedData = _salesService.GetInvertedSales(existingData);
+            List<string> _columnsHeaders = _salesService.GetColumnHeaders(existingData);
+            List<string> _rowTotal = _salesService.GetTotal(_invertedData);
+            List<string> _rowMedian = _salesService.GetMedian(_invertedData);
+            List<string> _rowAverage = _salesService.GetAverage(_invertedData);
+
+            
+            //get footers rows
+            List<List<string>> _footerRows = new List<List<string>>();
+            _footerRows.Add(_salesService.GetAverage(_invertedData));
+            _footerRows.Add(_salesService.GetMedian(_invertedData));
+            _footerRows.Add(_salesService.GetTotal(_invertedData));
+
+            //add footers
+            foreach (List<string> _footerRow in _footerRows)
             {
-                result[i][0] = rows[i + 1];
+                _invertedData.Add(_footerRow);
             }
-
-            List<string> average = new List<string>();
-            average.Add("Average");
-            List<string> total = new List<string>();
-            total.Add("Total");
-            List<string> median = new List<string>();
-            median.Add("Median");
-            List<string> empty = new List<string>();
-            empty.Add(" ");
-            for (int i = 1; i < result[0].Count; i++)
-            {
-                var sum = result.Sum(x => float.Parse(x[i]));
-                var colArray = result.Select(r => r[i]).ToArray();
-                Array.Sort(colArray);
-
-                average.Add((sum / result.Count).ToString("0.00"));
-                total.Add(sum.ToString());
-
-                string med = "";
-
-                if (colArray.Length % 2 != 0)
-                    med = (colArray[colArray.Length / 2]).ToString();
-                else
-                    med = ((Convert.ToDouble(colArray[(colArray.Length - 1) / 2]) + Convert.ToDouble(colArray[colArray.Length / 2])) / 2).ToString();
-
-                median.Add(med);
-                empty.Add(" ");
-            }
-
-            //calculate median
-
-
-
-            //add column headers
-            result.Insert(0, columns);
-            result.Add(empty);
-            result.Add(average);
-            result.Add(median);
-            result.Add(total);
-
-            return View(new SalesViewModel() { ExistingSaleData = result, NewSale = new Sales() });
+            _invertedData.Insert(0, _columnsHeaders);
+            return View(new SalesViewModel() { ExistingSaleData = _invertedData, NewSale = new Sales() });
         }
 
         
@@ -86,10 +60,8 @@ namespace CompanySales.Controllers
         [HttpPost]
         public ActionResult Create(SalesViewModel salesViewModel)
         {
-            db.Sales.Add(salesViewModel.NewSale);
-            db.SaveChanges();
+            _salesService.AddSale(salesViewModel.NewSale);
             return RedirectToAction("Index");
-
         }
     }
 }
