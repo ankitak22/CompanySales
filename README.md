@@ -12,4 +12,4 @@ Assumptions
 •	Month, State and Sale cannot be null.
 •	For a Sate in a particular month if sale is 0, a new data row will not be created.
 
-![](CompanySales/CompanySales/Screenshots/Screenshot1.png)
+![](CompanySales/Screenshots/Screenshot1.png)
